@@ -42,7 +42,11 @@ class capture_window(QMainWindow, Ui_MainWindow):
         # method for the catpuring of images from the camera
     def startCapture(self):
         i = 1
+        # create a video object
+        videoCaptureObject = cv.VideoCapture(4)
+
         DEFAULT_EXPOSURE_VAL = 0
+
         #if exposure value has not been preset
         if(self.pushButton_2.isChecked()):
             #set defined exposure value
@@ -54,20 +58,29 @@ class capture_window(QMainWindow, Ui_MainWindow):
         while (self.startButton.isChecked()):
             
             print("capture started:", i)
-            date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S:%f")
-            # gps unit code here
-            # create a video object
-            videoCaptureObject = cv.VideoCapture(0)
+            #date_time = datetime.datetime.now().strftime("%m/%d/%Y:%H:%M:%S:%f")
+            #time_= datetime.time
+            #### gps unit code here###
+            #date_time+= ".png"
+            
             # read in a frame
             ret, frame = videoCaptureObject.read()
-            #run gradient score
-            GradientScore(self,videoCaptureObject,exposure_val,1)
-            #get current gps postion
-            #save the frame with data,time as the title
-            cv.imwrite( "date_time.png",frame)
-            i += 1
-            #wait one second
-            time.sleep(1)
+            
+            #if the capture has happend properly
+            if(ret == True):
+                #run gradient score
+                GradientScore(self,videoCaptureObject,exposure_val,frame)
+                #get current gps postion
+                #save the frame with data,time as the title
+                name = "capture" + str(i) +".png"
+                print(name)
+                cv.imwrite(name,frame)
+                i += 1
+                #wait one second
+                
+            else:
+                print("capture was false")
+               
 
 def NonlinearGain(self, g):
     # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in Shim et. al.(2018)
@@ -88,8 +101,8 @@ def NonlinearGain(self, g):
 def GradientScore(self, cap, Exposure, varargin):
         MAX_EXPOSURE = 4
         MIN_EXPOSURE = -13
-        if varargin > 0:
-            MAX_COUNTER = varargin
+        if len(varargin) > 0:
+            MAX_COUNTER = varargin[0]
         else:
             MAX_COUNTER = 50
         cap
@@ -141,9 +154,16 @@ def GradientScore(self, cap, Exposure, varargin):
                 if np.abs(logdE) < 0.2:
                     bContinue = False
 
-            if (LoopCount > MAX_COUNTER) or (Exposure < MIN_EXPOSURE) or (Exposure > MAX_EXPOSURE):
-                print('Tuning exceeded camera setting or maximum number of iteration has been exceeded.')
+            if (LoopCount > MAX_COUNTER.all()):
+                print("maximum number of iteration has been exceeded.")
                 break
+            elif(Exposure < MIN_EXPOSURE):
+                print("min exposure exceeded")
+                break
+            elif(Exposure > MAX_EXPOSURE):
+                print("max exposure exceeded")
+                break
+
         print('GradientScore iteration count = ', LoopCount)
         return Exposure
 
