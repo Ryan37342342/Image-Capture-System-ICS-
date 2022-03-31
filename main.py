@@ -4,7 +4,7 @@ import time
 import numpy as np
 import sys
 import cv2 as cv
-from PyQt5.Qwidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from CaptureWindow import Ui_MainWindow
 
 
@@ -38,29 +38,61 @@ class capture_window(QMainWindow, Ui_MainWindow):
         return exposure_val  
             
 
-    def NonlinearGain(self, g):
-        # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in Shim et. al.(2018)
-        p = 1.5
-        q = 2
-        if g < 0.5:
-            R = 2
-        elif g < 1:
-            R = 1 + (2 * (1 - g)) ** p
-        elif g < 2:
-            R = 1 - 0.5 * (1 - g) ** q
-        elif g >= 2:
-            R = 0.5
-        R = np.log2(R)
-        return R
 
-    def GradientScore(self, cap, Exposure, varargin):
+        # method for the catpuring of images from the camera
+    def startCapture(self):
+        i = 1
+        DEFAULT_EXPOSURE_VAL = 0
+        #if exposure value has not been preset
+        if(self.pushButton_2.isChecked()):
+            #set defined exposure value
+            exposure_val = self.adjustParams()
+            
+        else:
+            exposure_val = DEFAULT_EXPOSURE_VAL
+        #while the startCapture button is checked 
+        while (self.startButton.isChecked()):
+            
+            print("capture started:", i)
+            date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S:%f")
+            # gps unit code here
+            # create a video object
+            videoCaptureObject = cv.VideoCapture(0)
+            # read in a frame
+            ret, frame = videoCaptureObject.read()
+            #run gradient score
+            GradientScore(self,videoCaptureObject,exposure_val,1)
+            #get current gps postion
+            #save the frame with data,time as the title
+            cv.imwrite( "date_time.png",frame)
+            i += 1
+            #wait one second
+            time.sleep(1)
+
+def NonlinearGain(self, g):
+    # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in Shim et. al.(2018)
+    p = 1.5
+    q = 2
+    if g < 0.5:
+        R = 2
+    elif g < 1:
+        R = 1 + (2 * (1 - g)) ** p
+    elif g < 2:
+        R = 1 - 0.5 * (1 - g) ** q
+    elif g >= 2:
+        R = 0.5
+    R = np.log2(R)
+    return R
+
+
+def GradientScore(self, cap, Exposure, varargin):
         MAX_EXPOSURE = 4
         MIN_EXPOSURE = -13
-        if len(varargin) > 0:
-            MAX_COUNTER = varargin[0]
+        if varargin > 0:
+            MAX_COUNTER = varargin
         else:
             MAX_COUNTER = 50
-
+        cap
         delta = 0.04
         lambd = 5e2
         Kp = 0.5
@@ -101,9 +133,8 @@ class capture_window(QMainWindow, Ui_MainWindow):
                     m[idx] = np.sum(np.log10(lambd * (ImageGrad[bDenoise] - delta) + 1))
                     m[idx] /= np.log10(lambd * (1 - delta) + 1)
                 # print(m)
-
                 ptbest = np.argmax(m)
-                logdE = Kp * capture_window.NonlinearGain(gamma[ptbest])
+                logdE = Kp * NonlinearGain(self,gamma[ptbest])
                 # print(LoopCount,Exposure,Exposure+logdE)
                 Exposure += logdE
                 cap.set(cv.CAP_PROP_EXPOSURE, np.float64(Exposure))
@@ -115,38 +146,6 @@ class capture_window(QMainWindow, Ui_MainWindow):
                 break
         print('GradientScore iteration count = ', LoopCount)
         return Exposure
-
-        # method for the catpuring of images from the camera
-    def startCapture(self):
-        i = 1
-        DEFAULT_EXPOSURE_VAL = 0
-        #if exposure value has not been preset
-        if(self.pushButton_2.isChecked()):
-            #set defined exposure value
-            exposure_val = self.adjustParams()
-            
-        else:
-            exposure_val = DEFAULT_EXPOSURE_VAL
-        #while the startCapture button is checked 
-        while (self.startButton.isChecked()):
-            
-            print("capture started:", i)
-            date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S:%f")
-            # gps unit code here
-            # create a video object
-            videoCaptureObject = cv.VideoCapture(0)
-            # read in a frame
-            cap, frame = videoCaptureObject.read()
-            #run gradient score
-            self.GradientScore(self,cap,exposure_val)
-            #get current gps postion
-            #save the frame with data,time as the title
-            cv.imwrite( date_time,frame)
-            i += 1
-            #wait one second
-            time.sleep(1)
-
-
 
 # main code of the application#
 if __name__ == "__main__":
