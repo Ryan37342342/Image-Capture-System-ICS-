@@ -1,10 +1,10 @@
 import datetime
 import time
-
+import os
 import numpy as np
 import sys
 import cv2 as cv
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog
 from CaptureWindow import Ui_MainWindow
 
 
@@ -15,7 +15,12 @@ class capture_window(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
 
-    
+    def getFolder(self):
+        dialog = QFileDialog(self)
+        filename = dialog.getExistingDirectory(self, "Select a file")
+        return filename
+
+
     # method to read in all cameras
     def setupCamera(self):
         # checks the first 10 indexes.
@@ -43,6 +48,9 @@ class capture_window(QMainWindow, Ui_MainWindow):
     def startCapture(self):
         i = 1
         # create a video object
+        filepath = capture_window.getFolder(self)
+        print(filepath)
+
         videoCaptureObject = cv.VideoCapture(4)
 
         DEFAULT_EXPOSURE_VAL = 0
@@ -77,9 +85,11 @@ class capture_window(QMainWindow, Ui_MainWindow):
                 cv.imwrite(name,frame)
                 i += 1
                 #wait one second
+                time.sleep(1)
                 
             else:
                 print("capture was false")
+                print(filepath)
                
 
 def NonlinearGain(self, g):
