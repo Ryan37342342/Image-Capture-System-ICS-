@@ -1,8 +1,6 @@
-from concurrent.futures import thread
-import datetime
-from hashlib import new
 import time
 import os
+
 import numpy as np
 import sys
 import cv2 as cv
@@ -10,11 +8,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
 
-# class of the capture GUI#
-
 
 def NonlinearGain(self, g):
-    # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in Shim et. al.(2018)
+    # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in
+    # Shim et. al.(2018)
     p = 1.5
     q = 2
     if g < 0.5:
@@ -87,13 +84,13 @@ def GradientScore(self, cap, Exposure, varargin):
             if np.abs(logdE) < 0.2:
                 bContinue = False
 
-        if (LoopCount > MAX_COUNTER.all()):
+        if LoopCount > MAX_COUNTER.all():
             print("maximum number of iteration has been exceeded.")
             break
-        elif(Exposure < MIN_EXPOSURE):
+        elif Exposure < MIN_EXPOSURE:
             print("min exposure exceeded")
             break
-        elif(Exposure > MAX_EXPOSURE):
+        elif Exposure > MAX_EXPOSURE:
             print("max exposure exceeded")
             break
 
@@ -106,6 +103,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+
     # method that opens a file dilog for folder selection
 
     def getFolder(self):
@@ -122,11 +120,11 @@ class capture_window(QMainWindow, Ui_MainWindow):
         i = 10
         while i > 0:
             cap = cv.VideoCapture(index)
-        if cap.read()[0]:
-            arr.append(index)
-            cap.release()
-        index += 1
-        i -= 1
+            if cap.read()[0]:
+                arr.append(index)
+                cap.release()
+            index += 1
+            i -= 1
         print("Active cameras are", arr)
 
     # method to manual change the parameters
@@ -139,8 +137,10 @@ class capture_window(QMainWindow, Ui_MainWindow):
     # method for the capturing of images from the camera
 
     def startCapture(self):
-        filepath = capture_window.getFolder(QFileDialog)
-        print(filepath)
+        if capwindow.startButton.isChecked():
+            # get the file path
+            filepath = capture_window.getFolder(self)
+            print(filepath)
         # create a thread
         self.thread = QThread()
         # create the capture loop class as a worker
@@ -151,60 +151,70 @@ class capture_window(QMainWindow, Ui_MainWindow):
         # when started thread runs runCapture
         self.thread.started.connect(self.worker.runCapture)
         self.worker.finished.connect(self.thread.quit)
-        # make sure that the worker and thread delete themselfs on finished signal
+        # make sure that the worker and thread delete themselves on finished signal
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.start()
 
 
 class capture_loop(QObject):
+    def __init__(self, path):
+        super().__init__()
+        self.filename = path
+
     finished = pyqtSignal()
 
     # task for threading (capture photos loop)
     def runCapture(self):
         i = 1
+        # datetime object for timing
         # get the save location (path) using a file dialog
-
+        filepath = self.filename
         # create a video object
-        videoCaptureObject = cv.VideoCapture(4)
+        videoCaptureObject = cv.VideoCapture(0)
 
         DEFAULT_EXPOSURE_VAL = 0
 
         # if exposure value has not been preset
-        if(self.pushButton_2.isChecked()):
+        if capwindow.pushButton_2.isChecked():
             # set defined exposure value
-            exposure_val = self.adjustParams()
-        # else use the default
+            exposure_val = capwindow.adjustParams()
+
+        # else use the default value
         else:
             exposure_val = DEFAULT_EXPOSURE_VAL
-        # while the startCapture button is checked
-        while (self.startButton.isChecked()):
+        # while the startCapture button is checked (capture loop)
+        while capwindow.startButton.isChecked():
 
             print("capture started:", i)
-            # date_time = datetime.datetime.now().strftime("%m/%d/%Y:%H:%M:%S:%f")
-            # time_= datetime.time
+            #####stuff for later########
             #### gps unit code here###
-            # date_time+= ".png"
 
             # read in a frame
             ret, frame = videoCaptureObject.read()
-
-        # if the capture has happend properly
-            if(ret == True):
+            # start time to get a postive capture
+            time_start = time.time()
+            # if the capture has happened properly
+            if ret:
+                # stop timer as a postive capture has happened
+                time_stop = time.time()
                 # run gradient score
-                GradientScore(self, videoCaptureObject, exposure_val, frame)
-                # get current gps postion
+                GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                 # save the frame with data,time as the title
                 name = "capture" + str(i) + ".png"
                 print(name)
                 cv.imwrite(os.path.join(filepath, name), frame)
                 i += 1
-                # wait one second
-                time.sleep(1)
+                # get the time to get  a postive capture
+                wait_time = time_stop - time_start
+                print(wait_time)
+                # wait
+                time.sleep(wait_time)
 
             else:
                 print("capture was false")
                 print(filepath)
+
         self.finished.emit()
 
 
