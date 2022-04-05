@@ -47,10 +47,10 @@ class capture_window(QMainWindow, Ui_MainWindow):
         # method for the catpuring of images from the camera
     def startCapture(self):
         i = 1
-        # create a video object
+        # get the save location (path) using a file dialog
         filepath = capture_window.getFolder(self)
         print(filepath)
-
+    # create a video object
         videoCaptureObject = cv.VideoCapture(4)
 
         DEFAULT_EXPOSURE_VAL = 0
@@ -59,7 +59,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
         if(self.pushButton_2.isChecked()):
             #set defined exposure value
             exposure_val = self.adjustParams()
-            
+        #else use the default  
         else:
             exposure_val = DEFAULT_EXPOSURE_VAL
         #while the startCapture button is checked 
@@ -82,7 +82,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
                 #save the frame with data,time as the title
                 name = "capture" + str(i) +".png"
                 print(name)
-                cv.imwrite(name,frame)
+                cv.imwrite(os.path.join(filepath,name),frame)
                 i += 1
                 #wait one second
                 time.sleep(1)
