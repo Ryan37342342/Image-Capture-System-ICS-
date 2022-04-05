@@ -33,7 +33,7 @@ def GradientScore(self, cap, Exposure, varargin):
         MAX_COUNTER = varargin[0]
     else:
         MAX_COUNTER = 50
-    cap
+
     delta = 0.04
     lambd = 5e2
     Kp = 0.5
@@ -61,8 +61,7 @@ def GradientScore(self, cap, Exposure, varargin):
             ImageY = cv.cvtColor(frame, cv.COLOR_BGR2HSV)[:, :, 2]
 
             m = np.zeros(lengamma)
-            # Higher g put more weights on stronger edges
-            for idx, g in enumerate(gamma):
+            for idx, g in enumerate(gamma):  # Higher g put more weights on stronger edges
                 Y = np.power(ImageY, g)
                 sobelx = cv.Sobel(Y, cv.CV_64F, 1, 0, ksize=edgewidth)
                 sobely = cv.Sobel(Y, cv.CV_64F, 0, 1, ksize=edgewidth)
@@ -72,10 +71,10 @@ def GradientScore(self, cap, Exposure, varargin):
                 # cv.waitKey(0)
 
                 bDenoise = ImageGrad > delta
-                m[idx] = np.sum(
-                    np.log10(lambd * (ImageGrad[bDenoise] - delta) + 1))
+                m[idx] = np.sum(np.log10(lambd * (ImageGrad[bDenoise] - delta) + 1))
                 m[idx] /= np.log10(lambd * (1 - delta) + 1)
             # print(m)
+
             ptbest = np.argmax(m)
             logdE = Kp * NonlinearGain(self, gamma[ptbest])
             # print(LoopCount,Exposure,Exposure+logdE)
@@ -113,7 +112,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
         return filename
 
     # method to read in all cameras
-    def setupCamera(self):
+    def setUp(self):
         # checks the first 10 indexes.
         index = 0
         arr = []
@@ -131,30 +130,34 @@ class capture_window(QMainWindow, Ui_MainWindow):
     def adjustParams(self):
         # get exposure value from textbox
         exposure_val = self.textAdjust.text()
-        print("exposure value manually set to:", exposure_val)
+        #print("exposure value manually set to:", exposure_val)
+        exposure_val = int(exposure_val)
         return exposure_val
 
     # method for the capturing of images from the camera
 
     def startCapture(self):
+
+
         if capwindow.startButton.isChecked():
             # get the file path
             filepath = capture_window.getFolder(self)
             print(filepath)
-        # create a thread
-        self.thread = QThread()
-        # create the capture loop class as a worker
-        self.worker = capture_loop(filepath)
-        # move worker to a thread
-        self.worker.moveToThread(self.thread)
-        # connect signals and slots
-        # when started thread runs runCapture
-        self.thread.started.connect(self.worker.runCapture)
-        self.worker.finished.connect(self.thread.quit)
-        # make sure that the worker and thread delete themselves on finished signal
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.start()
+            # create a thread
+            self.thread = QThread()
+            # create the capture loop class as a worker
+            self.worker = capture_loop(filepath)
+            # move worker to a thread
+            self.worker.moveToThread(self.thread)
+            # connect signals and slots
+            # when started thread runs runCapture
+            self.thread.started.connect(self.worker.runCapture)
+            self.worker.finished.connect(self.thread.quit)
+            # make sure that the worker and thread delete themselves on finished signal
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.thread.start()
+
 
 
 class capture_loop(QObject):
@@ -164,28 +167,28 @@ class capture_loop(QObject):
 
     finished = pyqtSignal()
 
+
     # task for threading (capture photos loop)
     def runCapture(self):
+
         i = 1
-        # datetime object for timing
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
         videoCaptureObject = cv.VideoCapture(0)
-
-        DEFAULT_EXPOSURE_VAL = 0
-
-        # if exposure value has not been preset
-        if capwindow.pushButton_2.isChecked():
-            # set defined exposure value
-            exposure_val = capwindow.adjustParams()
-
-        # else use the default value
-        else:
-            exposure_val = DEFAULT_EXPOSURE_VAL
+        exposure_val = 0.0
+        manual_overide = False
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
-
+           #check to see if manual overide has happened
+            if capwindow.adjustCamera.isChecked():
+                # set defined exposure value
+                exposure_val = capwindow.adjustParams()
+                videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, exposure_val)
+                manual_overide = True
+                print("exposure value manually set to:", float(exposure_val))
+            else:
+                manual_overide = False
             print("capture started:", i)
             #####stuff for later########
             #### gps unit code here###
@@ -198,16 +201,19 @@ class capture_loop(QObject):
             if ret:
                 # stop timer as a postive capture has happened
                 time_stop = time.time()
+                #if the value has not been overwritten
+                if not manual_overide:
                 # run gradient score
-                GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
+                    exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
+                    print("Auto Exposure value:", exposure_val)
+                else:
+                    print("Manual Exposure value:", exposure_val)
                 # save the frame with data,time as the title
                 name = "capture" + str(i) + ".png"
-                print(name)
                 cv.imwrite(os.path.join(filepath, name), frame)
                 i += 1
                 # get the time to get  a postive capture
                 wait_time = time_stop - time_start
-                print(wait_time)
                 # wait
                 time.sleep(wait_time)
 
@@ -216,6 +222,11 @@ class capture_loop(QObject):
                 print(filepath)
 
         self.finished.emit()
+
+
+
+
+
 
 
 # main code of the application#
