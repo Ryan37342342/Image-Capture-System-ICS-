@@ -8,6 +8,15 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
 
+# gps packages plus set up
+# import serial
+# from ublox_gps import UbloxGps
+# port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
+# gps = UbloxGps(port)
+
+# global array of capture data
+capture_data = np.array(int)
+
 
 def NonlinearGain(self, g):
     # Nonlinear function controls the feedback gain. Simpler and faster than the ad-hoc gain adjustment presented in
@@ -130,14 +139,11 @@ class capture_window(QMainWindow, Ui_MainWindow):
     def adjustParams(self):
         # get exposure value from textbox
         exposure_val = self.textAdjust.text()
-        #print("exposure value manually set to:", exposure_val)
-        exposure_val = int(exposure_val)
         return exposure_val
 
     # method for the capturing of images from the camera
 
     def startCapture(self):
-
 
         if capwindow.startButton.isChecked():
             # get the file path
@@ -145,7 +151,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
             print(filepath)
             # create a thread
             self.thread = QThread()
-            # create the capture loop class as a worker
+            # create the capture loop class as a worker passing the file path and numpy array
             self.worker = capture_loop(filepath)
             # move worker to a thread
             self.worker.moveToThread(self.thread)
@@ -159,7 +165,6 @@ class capture_window(QMainWindow, Ui_MainWindow):
             self.thread.start()
 
 
-
 class capture_loop(QObject):
     def __init__(self, path):
         super().__init__()
@@ -167,11 +172,15 @@ class capture_loop(QObject):
 
     finished = pyqtSignal()
 
-
     # task for threading (capture photos loop)
     def runCapture(self):
-
-        i = 1
+        # if capture data is empty
+        global capture_data
+        if capture_data.size == 0:
+            capID = 0
+        # else add from end
+        else:
+            capID = capture_data.size + 1
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
@@ -180,7 +189,7 @@ class capture_loop(QObject):
         manual_overide = False
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
-           #check to see if manual overide has happened
+            # check to see if manual overide has happened
             if capwindow.adjustCamera.isChecked():
                 # set defined exposure value
                 exposure_val = capwindow.adjustParams()
@@ -189,9 +198,12 @@ class capture_loop(QObject):
                 print("exposure value manually set to:", float(exposure_val))
             else:
                 manual_overide = False
-            print("capture started:", i)
+            print("capture started:", capID)
             #####stuff for later########
             #### gps unit code here###
+            # geo = gps.geo_coords()
+            # print("Longitude: ", geo.lon)
+            # print("Latitude: ", geo.lat)
 
             # read in a frame
             ret, frame = videoCaptureObject.read()
@@ -201,32 +213,30 @@ class capture_loop(QObject):
             if ret:
                 # stop timer as a postive capture has happened
                 time_stop = time.time()
-                #if the value has not been overwritten
+                # if the value has not been overwritten
                 if not manual_overide:
-                # run gradient score
+                    # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     print("Auto Exposure value:", exposure_val)
+
                 else:
                     print("Manual Exposure value:", exposure_val)
                 # save the frame with data,time as the title
-                name = "capture" + str(i) + ".png"
+                name = "capture" + str(capID) + ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
-                i += 1
+                capID += 1
+                # add data to capture data (add gps data here too)
+                capture_data = np.append(capture_data, capID)
                 # get the time to get  a postive capture
                 wait_time = time_stop - time_start
                 # wait
                 time.sleep(wait_time)
-
+            # the capture was false
             else:
                 print("capture was false")
-                print(filepath)
-
+        # close gps device
+        # port.close()
         self.finished.emit()
-
-
-
-
-
 
 
 # main code of the application#
