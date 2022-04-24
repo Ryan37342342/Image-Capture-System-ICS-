@@ -193,9 +193,9 @@ class capture_loop(QObject):
             if capwindow.adjustCamera.isChecked():
                 # set defined exposure value
                 exposure_val = capwindow.adjustParams()
-                videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, exposure_val)
+                videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, float(exposure_val))
                 manual_overide = True
-                print("exposure value manually set to:", float(exposure_val))
+
             else:
                 manual_overide = False
             print("capture started:", capID)
@@ -215,12 +215,15 @@ class capture_loop(QObject):
                 time_stop = time.time()
                 # if the value has not been overwritten
                 if not manual_overide:
+                    test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
+                    print("Exposure value:", test)
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
-                    print("Auto Exposure value:", exposure_val)
+                    #print("Auto Exposure value:", exposure_val)
 
                 else:
-                    print("Manual Exposure value:", exposure_val)
+                    test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
+                    print("Manual Exposure value:", test)
                 # save the frame with data,time as the title
                 name = "capture" + str(capID) + ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
