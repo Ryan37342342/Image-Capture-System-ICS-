@@ -8,11 +8,6 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
 
-# gps packages plus set up
-# import serial
-# from ublox_gps import UbloxGps
-# port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
-# gps = UbloxGps(port)
 
 # global array of capture data
 capture_data = np.array(int)
@@ -182,6 +177,8 @@ class capture_loop(QObject):
 
     # task for threading (capture photos loop)
     def runCapture(self):
+      
+      
 
         # if capture data is empty
         global capture_data
@@ -193,7 +190,7 @@ class capture_loop(QObject):
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
-        videoCaptureObject = cv.VideoCapture(0)
+        videoCaptureObject = cv.VideoCapture(4)
         videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
         exposure_val = 0.0
         manual_overide = False
@@ -227,8 +224,7 @@ class capture_loop(QObject):
                 if not manual_overide:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
-                    print("Exposure value:", test)
-                    print("Exposure value:", test2)
+                    print("Exposure value actual:", test)
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     #print("Auto Exposure value:", exposure_val)
