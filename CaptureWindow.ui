@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>254</width>
+    <width>476</width>
     <height>346</height>
    </rect>
   </property>
@@ -82,6 +82,42 @@
      <string>Adjust exposure</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>80</y>
+      <width>161</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Adjust timing</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="timingAdjust">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>100</y>
+      <width>113</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="timingButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>130</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>run set up</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
@@ -135,10 +171,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>timingButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>adjustTiming()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>390</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>261</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>startCapture()</slot>
   <slot>adjustParams()</slot>
   <slot>setUp()</slot>
+  <slot>adjustTiming()</slot>
  </slots>
 </ui>

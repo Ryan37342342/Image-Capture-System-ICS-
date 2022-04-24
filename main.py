@@ -1,6 +1,6 @@
 import time
 import os
-
+import pyrealsense2 as rs
 import numpy as np
 import sys
 import cv2 as cv
@@ -134,6 +134,14 @@ class capture_window(QMainWindow, Ui_MainWindow):
             index += 1
             i -= 1
         print("Active cameras are", arr)
+        cfg = rs.config()
+        p = rs.pipeline()
+        profile = p.start(cfg)
+        sensor = profile.get_device().query_sensors()[0]
+        max_exp = sensor.get_option_range(rs.option.exposure).max
+        min_exp = sensor.get_option_range(rs.option.exposure).min
+        print("maX Exposure:",max_exp)
+        print("mix exposure:", min_exp)
 
     # method to manual change the parameters
     def adjustParams(self):
@@ -174,6 +182,7 @@ class capture_loop(QObject):
 
     # task for threading (capture photos loop)
     def runCapture(self):
+
         # if capture data is empty
         global capture_data
         if capture_data.size == 0:
@@ -185,6 +194,7 @@ class capture_loop(QObject):
         filepath = self.filename
         # create a video object
         videoCaptureObject = cv.VideoCapture(0)
+        videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
         exposure_val = 0.0
         manual_overide = False
         # while the startCapture button is checked (capture loop)
@@ -216,7 +226,9 @@ class capture_loop(QObject):
                 # if the value has not been overwritten
                 if not manual_overide:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
+                    test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
                     print("Exposure value:", test)
+                    print("Exposure value:", test2)
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     #print("Auto Exposure value:", exposure_val)
