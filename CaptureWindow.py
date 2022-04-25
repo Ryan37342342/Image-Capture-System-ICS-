@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(254, 346)
+        MainWindow.resize(476, 346)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.adjustCamera = QtWidgets.QPushButton(self.centralwidget)
@@ -34,6 +34,16 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(10, 76, 161, 21))
         self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(280, 80, 161, 21))
+        self.label_2.setObjectName("label_2")
+        self.timingAdjust = QtWidgets.QLineEdit(self.centralwidget)
+        self.timingAdjust.setGeometry(QtCore.QRect(280, 100, 113, 25))
+        self.timingAdjust.setObjectName("timingAdjust")
+        self.timingButton = QtWidgets.QPushButton(self.centralwidget)
+        self.timingButton.setGeometry(QtCore.QRect(280, 130, 141, 31))
+        self.timingButton.setCheckable(True)
+        self.timingButton.setObjectName("timingButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -43,6 +53,7 @@ class Ui_MainWindow(object):
         self.startButton.clicked.connect(MainWindow.startCapture)
         self.adjustCamera.clicked.connect(MainWindow.adjustParams)
         self.setUpButton.clicked.connect(MainWindow.setUp)
+        self.timingButton.clicked.connect(MainWindow.adjustTiming)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -52,3 +63,5 @@ class Ui_MainWindow(object):
         self.setUpButton.setText(_translate("MainWindow", "run set up"))
         self.startButton.setText(_translate("MainWindow", "Start Capture"))
         self.label.setText(_translate("MainWindow", "Adjust exposure"))
+        self.label_2.setText(_translate("MainWindow", "Adjust timing"))
+        self.timingButton.setText(_translate("MainWindow", "Set time"))

@@ -115,7 +115,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>run set up</string>
+     <string>Set time</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

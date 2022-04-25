@@ -7,7 +7,7 @@ import cv2 as cv
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
-
+sys.setrecursionlimit(50000)
 
 # global array of capture data
 capture_data = np.array(int)
@@ -107,15 +107,14 @@ class capture_window(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
 
-    # method that opens a file dilog for folder selection
-
+    # method that opens a file dialog for folder selection
     def getFolder(self):
         dialog = QFileDialog(self)
         filename = dialog.getExistingDirectory(
             self, "Select a folder to save capture to")
         return filename
 
-    # method to read in all cameras
+    # method to read in all cameras and prints out the max and min values of exposure
     def setUp(self):
         # checks the first 10 indexes.
         index = 0
@@ -135,7 +134,7 @@ class capture_window(QMainWindow, Ui_MainWindow):
         sensor = profile.get_device().query_sensors()[0]
         max_exp = sensor.get_option_range(rs.option.exposure).max
         min_exp = sensor.get_option_range(rs.option.exposure).min
-        print("maX Exposure:",max_exp)
+        print("max Exposure:", max_exp)
         print("mix exposure:", min_exp)
 
     # method to manual change the parameters
@@ -144,8 +143,13 @@ class capture_window(QMainWindow, Ui_MainWindow):
         exposure_val = self.textAdjust.text()
         return exposure_val
 
-    # method for the capturing of images from the camera
+    # method to manually set the timing
+    def adjustTiming(self):
+        time_set = self.adjustTiming().text()
 
+        return float(time_set)
+
+    # method for the capturing of images from the camera
     def startCapture(self):
 
         if capwindow.startButton.isChecked():
@@ -177,9 +181,6 @@ class capture_loop(QObject):
 
     # task for threading (capture photos loop)
     def runCapture(self):
-      
-      
-
         # if capture data is empty
         global capture_data
         if capture_data.size == 0:
@@ -187,24 +188,28 @@ class capture_loop(QObject):
         # else add from end
         else:
             capID = capture_data.size + 1
+
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
         videoCaptureObject = cv.VideoCapture(4)
         videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
-        exposure_val = 0.0
-        manual_overide = False
+        exposure_val = 1
+        # if a manual time delay has been set get the time
+        if capwindow.timingButton.isChecked():
+            set_time = capwindow.adjustTiming()
+            manual_time = True
+        elif capwindow.adjustCamera.isChecked():
+            # set defined exposure value
+            exposure_val = capwindow.adjustParams()
+            videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, float(exposure_val))
+            manual_exposure = True
+        else:
+            manual_time = False
+            manual_exposure = False
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
-            # check to see if manual overide has happened
-            if capwindow.adjustCamera.isChecked():
-                # set defined exposure value
-                exposure_val = capwindow.adjustParams()
-                videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, float(exposure_val))
-                manual_overide = True
 
-            else:
-                manual_overide = False
             print("capture started:", capID)
             #####stuff for later########
             #### gps unit code here###
@@ -214,20 +219,20 @@ class capture_loop(QObject):
 
             # read in a frame
             ret, frame = videoCaptureObject.read()
-            # start time to get a postive capture
+            # start time to get a positive capture
             time_start = time.time()
             # if the capture has happened properly
             if ret:
-                # stop timer as a postive capture has happened
+                # stop timer as a positive capture has happened
                 time_stop = time.time()
                 # if the value has not been overwritten
-                if not manual_overide:
+                if not manual_exposure:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
-                    test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
-                    print("Exposure value actual:", test)
+                    # test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
+                    print("Exposure value auto:", test)
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
-                    #print("Auto Exposure value:", exposure_val)
+                    # print("Auto Exposure value:", exposure_val)
 
                 else:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
@@ -238,10 +243,14 @@ class capture_loop(QObject):
                 capID += 1
                 # add data to capture data (add gps data here too)
                 capture_data = np.append(capture_data, capID)
-                # get the time to get  a postive capture
+                # get the time to get  a positive capture
                 wait_time = time_stop - time_start
-                # wait
-                time.sleep(wait_time)
+                if not manual_time:
+                    # wait for auto time
+                    time.sleep(wait_time)
+                else:
+                    time.sleep(set_time)
+                    print("waiting for:", set_time)
             # the capture was false
             else:
                 print("capture was false")
