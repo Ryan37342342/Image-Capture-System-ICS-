@@ -7,8 +7,10 @@ import cv2 as cv
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
-sys.setrecursionlimit(50000)
+import faulthandler
 
+
+faulthandler.enable()
 # global array of capture data
 capture_data = np.array(int)
 
@@ -145,9 +147,8 @@ class capture_window(QMainWindow, Ui_MainWindow):
 
     # method to manually set the timing
     def adjustTiming(self):
-        time_set = self.adjustTiming().text()
-
-        return float(time_set)
+        time_set = self.timingAdjust.text()
+        return time_set
 
     # method for the capturing of images from the camera
     def startCapture(self):
@@ -195,22 +196,29 @@ class capture_loop(QObject):
         videoCaptureObject = cv.VideoCapture(4)
         videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
         exposure_val = 1
-        # if a manual time delay has been set get the time
-        if capwindow.timingButton.isChecked():
-            set_time = capwindow.adjustTiming()
-            manual_time = True
-        elif capwindow.adjustCamera.isChecked():
-            # set defined exposure value
-            exposure_val = capwindow.adjustParams()
-            videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, float(exposure_val))
-            manual_exposure = True
-        else:
-            manual_time = False
-            manual_exposure = False
+        manual_time = False
+        manual_exposure = False
+        set_time = 0
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
 
             print("capture started:", capID)
+            # if a manual time delay has been set get the time and/or exposure values
+            if capwindow.timingButton.isChecked():
+                set_time = capwindow.adjustTiming()
+                set_time = int(set_time)
+                print(set_time)
+                manual_time = True
+            else:
+                manual_time = False
+
+            if capwindow.adjustCamera.isChecked():
+                # set defined exposure value
+                exposure_val = capwindow.adjustParams()
+                videoCaptureObject.set(cv.CAP_PROP_EXPOSURE, float(exposure_val))
+                manual_exposure = True
+            else:
+                manual_exposure = False
             #####stuff for later########
             #### gps unit code here###
             # geo = gps.geo_coords()
@@ -245,12 +253,12 @@ class capture_loop(QObject):
                 capture_data = np.append(capture_data, capID)
                 # get the time to get  a positive capture
                 wait_time = time_stop - time_start
-                if not manual_time:
-                    # wait for auto time
-                    time.sleep(wait_time)
-                else:
+                if manual_time:
                     time.sleep(set_time)
                     print("waiting for:", set_time)
+                else:
+                    # wait for auto time
+                    time.sleep(wait_time)
             # the capture was false
             else:
                 print("capture was false")

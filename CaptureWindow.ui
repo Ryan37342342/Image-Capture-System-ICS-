@@ -29,6 +29,12 @@
     <property name="checkable">
      <bool>true</bool>
     </property>
+    <property name="autoRepeatDelay">
+     <number>0</number>
+    </property>
+    <property name="autoRepeatInterval">
+     <number>0</number>
+    </property>
    </widget>
    <widget class="QPushButton" name="setUpButton">
     <property name="geometry">
@@ -57,6 +63,12 @@
     </property>
     <property name="checkable">
      <bool>true</bool>
+    </property>
+    <property name="autoRepeatDelay">
+     <number>0</number>
+    </property>
+    <property name="autoRepeatInterval">
+     <number>0</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="textAdjust">
@@ -119,6 +131,15 @@
     </property>
     <property name="checkable">
      <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+    <property name="autoRepeatDelay">
+     <number>0</number>
+    </property>
+    <property name="autoRepeatInterval">
+     <number>0</number>
     </property>
    </widget>
   </widget>
