@@ -1,16 +1,17 @@
 import time
 import os
-import pyrealsense2 as rs
+#import pyrealsense2 as rs
 import numpy as np
 import sys
 import cv2 as cv
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from CaptureWindow import Ui_MainWindow
-import faulthandler
+import serial
+from ublox_gps import UbloxGps
 
 
-faulthandler.enable()
+
 # global array of capture data
 capture_data = np.array(int)
 
@@ -182,9 +183,12 @@ class capture_loop(QObject):
 
     # task for threading (capture photos loop)
     def runCapture(self):
+        #initalize gps
+        port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
+        gps = UbloxGps(port)
         # if capture data is empty
         global capture_data
-        if capture_data.size == 0:
+        if capture_data.size == 1:
             capID = 0
         # else add from end
         else:
@@ -231,6 +235,11 @@ class capture_loop(QObject):
             time_start = time.time()
             # if the capture has happened properly
             if ret:
+                # get the gps coordinates of the capture
+                geo = gps.geo_coords()
+                #print them
+                print("Longitude: ", geo.lon)
+                print("Latitude: ", geo.lat)
                 # stop timer as a positive capture has happened
                 time_stop = time.time()
                 # if the value has not been overwritten
@@ -246,11 +255,11 @@ class capture_loop(QObject):
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     print("Manual Exposure value:", test)
                 # save the frame with data,time as the title
-                name = "capture" + str(capID) + ".png"
+                name = "capture:" + str(capID) +"_lat:"+ str(geo.lat)+"_lon:" + str(geo.lon)+ ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
                 capID += 1
                 # add data to capture data (add gps data here too)
-                capture_data = np.append(capture_data, capID)
+                capture_data = np.append(capture_data, capID, geo.lat, geo.lon)
                 # get the time to get  a positive capture
                 wait_time = time_stop - time_start
                 if manual_time:
