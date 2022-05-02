@@ -1,6 +1,6 @@
 import time
 import os
-#import pyrealsense2 as rs
+import pyrealsense2 as rs
 import numpy as np
 import sys
 import cv2 as cv
