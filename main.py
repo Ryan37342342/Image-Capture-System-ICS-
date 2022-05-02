@@ -10,8 +10,6 @@ from CaptureWindow import Ui_MainWindow
 import serial
 from ublox_gps import UbloxGps
 
-
-
 # global array of capture data
 capture_data = np.array(int)
 
@@ -183,8 +181,8 @@ class capture_loop(QObject):
 
     # task for threading (capture photos loop)
     def runCapture(self):
-        #initalize gps
-        port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
+        # initalize gps
+        port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=20)
         gps = UbloxGps(port)
         # if capture data is empty
         global capture_data
@@ -237,7 +235,7 @@ class capture_loop(QObject):
             if ret:
                 # get the gps coordinates of the capture
                 geo = gps.geo_coords()
-                #print them
+                # print them
                 print("Longitude: ", geo.lon)
                 print("Latitude: ", geo.lat)
                 # stop timer as a positive capture has happened
@@ -255,11 +253,11 @@ class capture_loop(QObject):
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     print("Manual Exposure value:", test)
                 # save the frame with data,time as the title
-                name = "capture:" + str(capID) +"_lat:"+ str(geo.lat)+"_lon:" + str(geo.lon)+ ".png"
+                name = "capture:" + str(capID) + "_lat:" + str(geo.lat) + "_lon:" + str(geo.lon) + ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
                 capID += 1
                 # add data to capture data (add gps data here too)
-                capture_data = np.append(capture_data, capID, geo.lat, geo.lon)
+                capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
                 # get the time to get  a positive capture
                 wait_time = time_stop - time_start
                 if manual_time:
