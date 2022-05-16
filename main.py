@@ -206,7 +206,7 @@ class capture_loop(QObject):
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
 
-            print("capture started:", capID)
+            print("Capture started:", capID)
             # if a manual time delay has been set get the time and/or exposure values
             if capwindow.timingButton.isChecked():
                 set_time = capwindow.adjustTiming()
@@ -240,7 +240,7 @@ class capture_loop(QObject):
                 if not manual_exposure:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     # test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
-                    print("Exposure value auto:", test, "\n")
+                    print("Exposure value auto:", test)
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     # print("Auto Exposure value:", exposure_val)
@@ -253,9 +253,9 @@ class capture_loop(QObject):
                 name = "capture:" + str(capID) + "_lat:" + str(geo.lat) + "_lon:" + str(geo.lon) + ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
                 capID += 1
-                print("finished capture")
+                print("Finished capture\n")
                 # add data to capture data (add gps data here too)
-               # capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
+                # capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
                 # get the time to get  a positive capture
                 wait_time = time_stop - time_start
                 if manual_time:
