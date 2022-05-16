@@ -93,12 +93,14 @@ def GradientScore(self, cap, Exposure, varargin):
             break
         elif Exposure < MIN_EXPOSURE:
             print("min exposure exceeded")
+            Exposure = MIN_EXPOSURE
             break
         elif Exposure > MAX_EXPOSURE:
             print("max exposure exceeded")
             break
 
     print('GradientScore iteration count = ', LoopCount)
+    print ("auto finished:", Exposure, "\n")
     return Exposure
 
 
@@ -243,6 +245,7 @@ class capture_loop(QObject):
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     # print("Auto Exposure value:", exposure_val)
 
+
                 else:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     print("Manual Exposure value:", test)
@@ -250,8 +253,9 @@ class capture_loop(QObject):
                 name = "capture:" + str(capID) + "_lat:" + str(geo.lat) + "_lon:" + str(geo.lon) + ".png"
                 cv.imwrite(os.path.join(filepath, name), frame)
                 capID += 1
+                print("finished capture")
                 # add data to capture data (add gps data here too)
-                capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
+               # capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
                 # get the time to get  a positive capture
                 wait_time = time_stop - time_start
                 if manual_time:
