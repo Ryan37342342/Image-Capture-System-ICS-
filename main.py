@@ -32,8 +32,8 @@ def NonlinearGain(self, g):
 
 
 def GradientScore(self, cap, Exposure, varargin):
-    MAX_EXPOSURE = 4
-    MIN_EXPOSURE = -13
+    MAX_EXPOSURE = 200000
+    MIN_EXPOSURE = 1.0
     if len(varargin) > 0:
         MAX_COUNTER = varargin[0]
     else:
@@ -135,8 +135,8 @@ class capture_window(QMainWindow, Ui_MainWindow):
         sensor = profile.get_device().query_sensors()[0]
         max_exp = sensor.get_option_range(rs.option.exposure).max
         min_exp = sensor.get_option_range(rs.option.exposure).min
-        print("max Exposure:", max_exp)
-        print("mix exposure:", min_exp)
+        print("max exposure:", max_exp)
+        print("min exposure:", min_exp)
 
     # method to manual change the parameters
     def adjustParams(self):
@@ -221,12 +221,6 @@ class capture_loop(QObject):
                 manual_exposure = True
             else:
                 manual_exposure = False
-            #####stuff for later########
-            #### gps unit code here###
-            # geo = gps.geo_coords()
-            # print("Longitude: ", geo.lon)
-            # print("Latitude: ", geo.lat)
-
             # read in a frame
             ret, frame = videoCaptureObject.read()
             # start time to get a positive capture
@@ -244,7 +238,7 @@ class capture_loop(QObject):
                 if not manual_exposure:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     # test2 = videoCaptureObject.get(cv.CAP_PROP_AUTO_EXPOSURE)
-                    print("Exposure value auto:", test)
+                    print("Exposure value auto:", test, "\n")
                     # run gradient score
                     exposure_val = GradientScore(capwindow, videoCaptureObject, exposure_val, frame)
                     # print("Auto Exposure value:", exposure_val)
@@ -262,7 +256,7 @@ class capture_loop(QObject):
                 wait_time = time_stop - time_start
                 if manual_time:
                     time.sleep(set_time)
-                    print("waiting for:", set_time)
+                    print("waiting for:", set_time, " seconds")
                 else:
                     # wait for auto time
                     time.sleep(wait_time)
@@ -270,7 +264,7 @@ class capture_loop(QObject):
             else:
                 print("capture was false")
         # close gps device
-        # port.close()
+        port.close()
         self.finished.emit()
 
 
