@@ -205,7 +205,8 @@ class capture_loop(QObject):
         set_time = 0
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
-
+            #update gps
+            gps = UbloxGps(port)
             print("Capture started:", capID)
             # if a manual time delay has been set get the time and/or exposure values
             if capwindow.timingButton.isChecked():
