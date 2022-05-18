@@ -6,6 +6,6 @@ a intel realsense D435i camera
 
   KNOWN BUG LIST:  
   -adjust value must be set before capture is started and capture must be stopped before adjust value is changed
-  -canceling select folder just prints captures to current directory instead of stopping operation
+    -canceling select folder just prints captures to current directory instead of stopping operation
 
 
