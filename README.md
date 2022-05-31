@@ -6,7 +6,7 @@ a intel realsense D435i camera
 
   KNOWN BUG LIST:  
   -adjust value must be set before capture is started and capture must be stopped before adjust value is changed
-    -canceling select folder just prints captures to current directory instead of stopping operation
-      -gps is slowing capture rate of the camera due to camera waiting on gps to call, to fix this the whole program will be changed to an ROS based python        program 
+  -canceling select folder just prints captures to current directory instead of stopping operation
+  -gps is slowing capture rate of the camera due to camera waiting on gps to call, to fix this the whole program will be changed to an ROS based python        program 
 
 
