@@ -32,8 +32,8 @@ def NonlinearGain(self, g):
 
 
 def GradientScore(self, cap, Exposure, varargin):
-    MAX_EXPOSURE = 200000
-    MIN_EXPOSURE = 1.0
+    MAX_EXPOSURE = 10000
+    MIN_EXPOSURE = 1
     if len(varargin) > 0:
         MAX_COUNTER = varargin[0]
     else:
@@ -89,14 +89,19 @@ def GradientScore(self, cap, Exposure, varargin):
                 bContinue = False
 
         if LoopCount > MAX_COUNTER.all():
-            print("maximum number of iteration has been exceeded.")
+            print("Exit Condition: MAX_COUNTER exceeded")
             break
+
         elif Exposure < MIN_EXPOSURE:
-            print("min exposure exceeded")
+            print( "Exit Condition: smaller than MIN_EXPOSURE")
             Exposure = MIN_EXPOSURE
             break
+
         elif Exposure > MAX_EXPOSURE:
-            print("max exposure exceeded")
+            print("Exit Condition: MAX_EXPOSURE exceeded")
+            Exposure = MAX_EXPOSURE
+            break
+
             break
 
     print('GradientScore iteration count = ', LoopCount)
@@ -184,29 +189,29 @@ class capture_loop(QObject):
     # task for threading (capture photos loop)
     def runCapture(self):
         # initalize gps
-        port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=20)
-        gps = UbloxGps(port)
+        #port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=10)
+        #gps = UbloxGps(port)
         # if capture data is empty
         global capture_data
         if capture_data.size == 1:
-            capID = 0
-        # else add from end
+                capID = 0
+            # else add from end
         else:
-            capID = capture_data.size + 1
+                capID = capture_data.size + 1
 
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
         videoCaptureObject = cv.VideoCapture(4)
         videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
-        exposure_val = 1
+        exposure_val = 100
         manual_time = False
         manual_exposure = False
         set_time = 0
         # while the startCapture button is checked (capture loop)
         while capwindow.startButton.isChecked():
-            #update gps
-            gps = UbloxGps(port)
+            # update gps
+            # gps = UbloxGps(port)
             print("Capture started:", capID)
             # if a manual time delay has been set get the time and/or exposure values
             if capwindow.timingButton.isChecked():
@@ -231,12 +236,12 @@ class capture_loop(QObject):
             # if the capture has happened properly
             if ret:
                 # get the gps coordinates of the capture
-                geo = gps.geo_coords()
+                # geo = gps.geo_coords()
                 # print them
-                print("Longitude: ", geo.lon)
-                print("Latitude: ", geo.lat)
+                # print("Longitude: ", geo.lon)
+                # print("Latitude: ", geo.lat)
                 # stop timer as a positive capture has happened
-                time_stop = time.time()
+                # time_stop = time.time()
                 # if the value has not been overwritten
                 if not manual_exposure:
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
@@ -251,25 +256,25 @@ class capture_loop(QObject):
                     test = videoCaptureObject.get(cv.CAP_PROP_EXPOSURE)
                     print("Manual Exposure value:", test)
                 # save the frame with data,time as the title
-                name = "capture:" + str(capID) + "_lat:" + str(geo.lat) + "_lon:" + str(geo.lon) + ".png"
+                name = "capture:" + str(capID)+ ".png" #"_lat:" + str(geo.lat) + "_lon:" + str(geo.lon)
                 cv.imwrite(os.path.join(filepath, name), frame)
                 capID += 1
                 print("Finished capture\n")
                 # add data to capture data (add gps data here too)
                 # capture_data = np.append(capture_data, [capID, geo.lat, geo.lon])
                 # get the time to get  a positive capture
-                wait_time = time_stop - time_start
+                # wait_time = time_stop - time_start
                 if manual_time:
                     time.sleep(set_time)
                     print("waiting for:", set_time, " seconds")
-                else:
+                # else:
                     # wait for auto time
-                    time.sleep(wait_time)
+                    # time.sleep(wait_time)
             # the capture was false
             else:
                 print("capture was false")
         # close gps device
-        port.close()
+        #port.close()
         self.finished.emit()
 
 
