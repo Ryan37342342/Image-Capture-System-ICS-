@@ -1,4 +1,5 @@
 <launch>
     <node pkg="ICS" type="publisher_gps.py" name = "gps_node" output="screen"></node>
-    <node pkg="ICS" type="subscriber_main.py" name = "camera_main_node" output="screen"></node>
+    <node pkg="ICS" type="publisher_camera.py" name = "camera_node" output="screen"></node>
+    <node pkg="ICS" type="subscriber_main.py" name = "main_node" output="screen"></node>
 </launch>
