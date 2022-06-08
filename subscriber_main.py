@@ -32,7 +32,7 @@ def save_frame(data):
 # main node processes
 def run_main():
     rospy.init_node("main_node", anonymous=True)
-    rospy.loginfo()
+    rospy.loginfo("main node started")
     rospy.Subscriber('gps_coordinates', String, process_gps_data)
     rospy.Subscriber('frames', Image, save_frame)
 
