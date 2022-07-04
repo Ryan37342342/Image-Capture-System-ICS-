@@ -107,7 +107,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-catkin_install_python(PROGRAMS publisher_gps.py subscriber_main.py publisher_intel_camera.py publisher_basler_camera.py
+catkin_install_python(PROGRAMS publisher_gps.py subscriber_main.py publisher_intel_camera.py publisher_basler_camera.py gui.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
    )
 ###########
