@@ -202,7 +202,7 @@ class capture_loop(QObject):
         # get the save location (path) using a file dialog
         filepath = self.filename
         # create a video object
-        videoCaptureObject = cv.VideoCapture(4)
+        videoCaptureObject = cv.VideoCapture(2)
         videoCaptureObject.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
         exposure_val = 100
         manual_time = False
