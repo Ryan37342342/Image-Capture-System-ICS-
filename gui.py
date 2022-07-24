@@ -13,6 +13,8 @@ class IcsGuiApp(MDApp):
 
     def build(self):
         return self.screen
+    def start_capture(self,*args):
+        print("working asc")
 
 if __name__ == '__main__':
     rospy.init_node("gui_node", anonymous=True)

@@ -33,9 +33,10 @@ def get_min_max(camera):
 
 # method to show image
 def show_image(img):
-    cv.namedWindow('Image Window 1', cv.WINDOW_NORMAL)
-    cv.imshow("Image Window 1", img)
+    cv.namedWindow('Image Window 2', cv.WINDOW_NORMAL)
+    cv.imshow("Image Window 2", img)
     cv.waitKey(3)
+
 
 # method to find camera
 def find_num_cameras():
@@ -47,19 +48,20 @@ def find_num_cameras():
 # main capture loop
 def start_camera():
     global exposure_val
-    pub = rospy.Publisher('frames', Image, queue_size=10)
+    pub = rospy.Publisher('frames2', Image, queue_size=10)
     rospy.init_node('camera_node', anonymous=True)
-    rospy.loginfo("Camera node 1 started")
+    rospy.loginfo("Camera node 2 started")
 
     br = CvBridge()
     # uncomment to find number of cameras connected
     # find_num_cameras()
     # time.sleep(10)
-    # connecting to the first camera
+
+    # connecting to the second camera
     tl_factory = pylon.TlFactory.GetInstance()
     devices = tl_factory.EnumerateDevices()
     camera = pylon.InstantCamera()
-    camera.Attach(tl_factory.CreateDevice(devices[0]))
+    camera.Attach(tl_factory.CreateDevice(devices[1]))
     camera.Open()
     # create a video stream by continually grabbing the latest image
     camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
@@ -85,8 +87,10 @@ def start_camera():
             frame = image_converted.GetArray()
             # publish the frame
             pub.publish(br.cv2_to_imgmsg(frame))
-            show_image(frame)
+            # run auto exposure
+            # exposure_val = gradient_score(camera, exposure_val, frame)
             # set the exposure for the next capture
+            #show_image(frame)
             grabResult.Release()
         else:
             print("capture was false")
@@ -98,7 +102,7 @@ def start_camera():
 if __name__ == '__main__':
     try:
         print("STARTED")
-
+        time.sleep(2)
         start_camera()
     except rospy.ROSException:
         print(rospy.ROSException)
