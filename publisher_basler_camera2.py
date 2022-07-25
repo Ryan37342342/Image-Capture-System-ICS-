@@ -6,6 +6,7 @@ import rospy
 import cv2 as cv
 from pypylon import pylon
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool
 from cv_bridge import CvBridge
 
 max_exposure = 1000000
@@ -46,11 +47,9 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera():
+def start_camera(data):
     global exposure_val
     pub = rospy.Publisher('frames2', Image, queue_size=10)
-    rospy.init_node('camera_node', anonymous=True)
-    rospy.loginfo("Camera node 2 started")
 
     br = CvBridge()
     # uncomment to find number of cameras connected
@@ -69,16 +68,13 @@ def start_camera():
     converter = pylon.ImageFormatConverter()
     camera.AutoFunctionROIUseBrightness.SetValue(True)
     camera.ExposureAuto.SetValue("Continuous")
-    # show camera values
-    # get_min_max(camera)
     # set converter to opencv bgr format
     converter.OutputPixelFormat = pylon.PixelType_BGR8packed
     converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
     # get max/min exposuretimes
     # get_min_max(camera)
-    # print("test")
     # while the node is running
-    while not rospy.is_shutdown():
+    while data.data:
         grabResult = camera.RetrieveResult(500, pylon.TimeoutHandling_ThrowException)
         # if the capture has happened properly
         if grabResult.GrabSucceeded():
@@ -87,10 +83,7 @@ def start_camera():
             frame = image_converted.GetArray()
             # publish the frame
             pub.publish(br.cv2_to_imgmsg(frame))
-            # run auto exposure
-            # exposure_val = gradient_score(camera, exposure_val, frame)
-            # set the exposure for the next capture
-            #show_image(frame)
+            show_image(frame)
             grabResult.Release()
         else:
             print("capture was false")
@@ -99,10 +92,21 @@ def start_camera():
     camera.Close()
 
 
+def stop_capture(data):
+    if not data.data:
+        rospy.signal_shutdown("Shutdown from gui ")
+
+def main():
+    rospy.Subscriber('start', Bool, start_camera)
+    rospy.init_node('camera_node', anonymous=True)
+    rospy.loginfo("Camera node 2 started")
+
+
 if __name__ == '__main__':
     try:
         print("STARTED")
         time.sleep(2)
-        start_camera()
+        main()
+        rospy.spin()
     except rospy.ROSException:
         print(rospy.ROSException)

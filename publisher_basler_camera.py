@@ -6,6 +6,7 @@ import rospy
 import cv2 as cv
 from pypylon import pylon
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool
 from cv_bridge import CvBridge
 
 max_exposure = 1000000
@@ -37,6 +38,7 @@ def show_image(img):
     cv.imshow("Image Window 1", img)
     cv.waitKey(3)
 
+
 # method to find camera
 def find_num_cameras():
     tlFactory = pylon.TlFactory.GetInstance()
@@ -45,11 +47,9 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera():
+def start_camera(data):
     global exposure_val
     pub = rospy.Publisher('frames', Image, queue_size=10)
-    rospy.init_node('camera_node', anonymous=True)
-    rospy.loginfo("Camera node 1 started")
 
     br = CvBridge()
     # uncomment to find number of cameras connected
@@ -76,7 +76,9 @@ def start_camera():
     # get_min_max(camera)
     # print("test")
     # while the node is running
-    while not rospy.is_shutdown():
+    while data.data:
+        if not data.data:
+            rospy.signal_shutdown("Shutdown from gui ")
         grabResult = camera.RetrieveResult(500, pylon.TimeoutHandling_ThrowException)
         # if the capture has happened properly
         if grabResult.GrabSucceeded():
@@ -95,10 +97,21 @@ def start_camera():
     camera.Close()
 
 
+def stop_capture(data):
+    if not data.data:
+        rospy.signal_shutdown("Shutdown from gui ")
+
+
+def main():
+    rospy.Subscriber('start', Bool, start_camera)
+    rospy.Subscriber('stop', Bool, stop_capture)
+    rospy.init_node('camera_node', anonymous=True)
+    rospy.loginfo("Camera node 1 started")
+
+
 if __name__ == '__main__':
     try:
-        print("STARTED")
-
-        start_camera()
+        main()
+        rospy.spin()
     except rospy.ROSException:
         print(rospy.ROSException)

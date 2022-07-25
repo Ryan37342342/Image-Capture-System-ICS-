@@ -1,10 +1,11 @@
 #!/usr/bin/env
 import os
+import re
 import pyrealsense2 as rs
 import numpy as np
 import rospy
 import cv2 as cv
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
@@ -57,15 +58,39 @@ def save_frame2(data):
     cap_id += 1
 
 
-# main node processes
+def start_capture(data):
+    print(data)
+    if data.data:
+        rospy.Subscriber('gps_coordinates', String, process_gps_data)
+        rospy.Subscriber('frames', Image, save_frame1)
+        rospy.Subscriber('frames2', Image, save_frame2)
+    else:
+        rospy.loginfo("bad start value: should be True, got False")
+def stop_capture(data):
+    if not data.data:
+        rospy.signal_shutdown("Shutdown from gui ")
+
+
+def set_filepath(data):
+    path = str(data)
+    path = path.replace('\"', '')
+    fp = re.split("#| ", path)
+    print(fp)
+    global filepath1
+    global filepath2
+    filepath1 = fp[1]
+    filepath2 = fp[2]
+
+    print("filepath 1: ", filepath1)
+    print("filepath 2: ", filepath2)
+
+
 def run_main():
     rospy.init_node("main_node", anonymous=True)
-
     rospy.loginfo("main node started")
-
-    rospy.Subscriber('gps_coordinates', String, process_gps_data)
-    rospy.Subscriber('frames', Image, save_frame1)
-    rospy.Subscriber('frames2', Image, save_frame2)
+    rospy.Subscriber('start', Bool, start_capture)
+    rospy.Subscriber('stop', Bool, stop_capture)
+    rospy.Subscriber('filepaths', String, set_filepath)
 
 
 if __name__ == '__main__':
