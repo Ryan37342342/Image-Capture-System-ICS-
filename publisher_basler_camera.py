@@ -9,6 +9,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from cv_bridge import CvBridge
 
+flag = True
 max_exposure = 1000000
 min_exposure = 16
 exposure_val = 8000
@@ -47,7 +48,7 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera(data):
+def start_camera():
     global exposure_val
     pub = rospy.Publisher('frames', Image, queue_size=10)
 
@@ -58,6 +59,7 @@ def start_camera(data):
     # connecting to the first camera
     tl_factory = pylon.TlFactory.GetInstance()
     devices = tl_factory.EnumerateDevices()
+    global camera
     camera = pylon.InstantCamera()
     camera.Attach(tl_factory.CreateDevice(devices[0]))
     camera.Open()
@@ -76,9 +78,7 @@ def start_camera(data):
     # get_min_max(camera)
     # print("test")
     # while the node is running
-    while data.data:
-        if not data.data:
-            rospy.signal_shutdown("Shutdown from gui ")
+    while not rospy.is_shutdown():
         grabResult = camera.RetrieveResult(500, pylon.TimeoutHandling_ThrowException)
         # if the capture has happened properly
         if grabResult.GrabSucceeded():
@@ -87,31 +87,30 @@ def start_camera(data):
             frame = image_converted.GetArray()
             # publish the frame
             pub.publish(br.cv2_to_imgmsg(frame))
+            # uncomment to show camera feed
             show_image(frame)
             # set the exposure for the next capture
             grabResult.Release()
         else:
             print("capture was false")
-    # stop grabbing and close the camera
     camera.StopGrabbing()
     camera.Close()
 
 
-def stop_capture(data):
+def shut_down(data):
     if not data.data:
-        rospy.signal_shutdown("Shutdown from gui ")
+        rospy.signal_shutdown("shutdown called ")
 
 
 def main():
-    rospy.Subscriber('start', Bool, start_camera)
-    rospy.Subscriber('stop', Bool, stop_capture)
     rospy.init_node('camera_node', anonymous=True)
     rospy.loginfo("Camera node 1 started")
+    rospy.Subscriber('shutdown', Bool, shut_down)
+    start_camera()
 
 
 if __name__ == '__main__':
     try:
         main()
-        rospy.spin()
     except rospy.ROSException:
         print(rospy.ROSException)

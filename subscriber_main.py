@@ -58,19 +58,6 @@ def save_frame2(data):
     cap_id += 1
 
 
-def start_capture(data):
-    print(data)
-    if data.data:
-        rospy.Subscriber('gps_coordinates', String, process_gps_data)
-        rospy.Subscriber('frames', Image, save_frame1)
-        rospy.Subscriber('frames2', Image, save_frame2)
-    else:
-        rospy.loginfo("bad start value: should be True, got False")
-def stop_capture(data):
-    if not data.data:
-        rospy.signal_shutdown("Shutdown from gui ")
-
-
 def set_filepath(data):
     path = str(data)
     path = path.replace('\"', '')
@@ -83,15 +70,18 @@ def set_filepath(data):
 
     print("filepath 1: ", filepath1)
     print("filepath 2: ", filepath2)
-
+def shut_down(data):
+    if not data.data:
+        rospy.signal_shutdown("shutdown called ")
 
 def run_main():
     rospy.init_node("main_node", anonymous=True)
     rospy.loginfo("main node started")
-    rospy.Subscriber('start', Bool, start_capture)
-    rospy.Subscriber('stop', Bool, stop_capture)
     rospy.Subscriber('filepaths', String, set_filepath)
-
+    rospy.Subscriber('gps_coordinates', String, process_gps_data)
+    rospy.Subscriber('frames', Image, save_frame1)
+    rospy.Subscriber('frames2', Image, save_frame2)
+    rospy.Subscriber('shutdown',Bool,shut_down)
 
 if __name__ == '__main__':
     try:

@@ -1,12 +1,13 @@
 # !/usr/bin/env
 import rospy
 import serial
-from std_msgs.msg import String
+from std_msgs.msg import String,Bool
 from ublox_gps import UbloxGps
 
 
 def run_gps():
     pub = rospy.Publisher('gps_coordinates', String, queue_size=10)
+    rospy.Subscriber('shutdown', Bool, shut_down)
     rospy.init_node('gps_pub_node', anonymous=True)
     rospy.loginfo("GPS node started")
     # initalize gps
@@ -20,6 +21,11 @@ def run_gps():
         coord = "lat:" + str(geo.lat) + " long:" + str(geo.lon)
         pub.publish(coord)
         # print(coord + "\n")
+
+
+def shut_down(data):
+    if not data.data:
+        rospy.signal_shutdown("shutdown called ")
 
 
 if __name__ == '__main__':

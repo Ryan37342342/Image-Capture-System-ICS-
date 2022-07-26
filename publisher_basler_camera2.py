@@ -9,6 +9,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from cv_bridge import CvBridge
 
+
 max_exposure = 1000000
 min_exposure = 16
 exposure_val = 8000
@@ -47,7 +48,7 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera(data):
+def start_camera():
     global exposure_val
     pub = rospy.Publisher('frames2', Image, queue_size=10)
 
@@ -73,8 +74,9 @@ def start_camera(data):
     converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
     # get max/min exposuretimes
     # get_min_max(camera)
+
     # while the node is running
-    while data.data:
+    while not rospy.is_shutdown():
         grabResult = camera.RetrieveResult(500, pylon.TimeoutHandling_ThrowException)
         # if the capture has happened properly
         if grabResult.GrabSucceeded():
@@ -83,28 +85,31 @@ def start_camera(data):
             frame = image_converted.GetArray()
             # publish the frame
             pub.publish(br.cv2_to_imgmsg(frame))
+            # uncomment to see camera feed
             show_image(frame)
             grabResult.Release()
         else:
             print("capture was false")
-    # stop grabbing and close the camera
     camera.StopGrabbing()
     camera.Close()
 
 
-def stop_capture(data):
+
+
+def shut_down(data):
     if not data.data:
-        rospy.signal_shutdown("Shutdown from gui ")
+        rospy.signal_shutdown("shutdown called ")
+
 
 def main():
-    rospy.Subscriber('start', Bool, start_camera)
     rospy.init_node('camera_node', anonymous=True)
     rospy.loginfo("Camera node 2 started")
+    rospy.Subscriber('shutdown', Bool, shut_down)
+    start_camera()
 
 
 if __name__ == '__main__':
     try:
-        print("STARTED")
         time.sleep(2)
         main()
         rospy.spin()

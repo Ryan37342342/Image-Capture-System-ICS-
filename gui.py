@@ -32,5 +32,6 @@ if __name__ == '__main__':
     rospy.init_node("gui_node", anonymous=True)
     pub = rospy.Publisher("start", Bool, queue_size=10)
     pub2 = rospy.Publisher("filepaths", String, queue_size=10)
-    pub3 = rospy.Publisher("stop", Bool, queue_size=10)
+    pub3 = rospy.Publisher("shutdown", Bool, queue_size=10)
     IcsGuiApp().run()
+
