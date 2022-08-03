@@ -10,7 +10,7 @@ def run_gps():
     rospy.Subscriber('shutdown', Bool, shut_down)
     rospy.init_node('gps_pub_node', anonymous=True)
     rospy.loginfo("GPS node started")
-    # initalize gps
+    # initalise gps
     port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=10)
     gps = UbloxGps(port)
 
@@ -18,7 +18,7 @@ def run_gps():
     while not rospy.is_shutdown():
         geo = gps.geo_coords()
         # publish them
-        coord = "lat:" + str(geo.lat) + " long:" + str(geo.lon)
+        coord = str(geo.lat) + "#" + str(geo.lon)
         pub.publish(coord)
         # print(coord + "\n")
 

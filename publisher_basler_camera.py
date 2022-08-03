@@ -48,7 +48,7 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera():
+def start_camera(data):
     global exposure_val
     pub = rospy.Publisher('frames', Image, queue_size=10)
 
@@ -106,11 +106,13 @@ def main():
     rospy.init_node('camera_node', anonymous=True)
     rospy.loginfo("Camera node 1 started")
     rospy.Subscriber('shutdown', Bool, shut_down)
-    start_camera()
+    rospy.Subscriber('start', Bool, start_camera)
+
 
 
 if __name__ == '__main__':
     try:
         main()
+        rospy.spin()
     except rospy.ROSException:
         print(rospy.ROSException)

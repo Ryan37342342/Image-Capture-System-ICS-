@@ -9,7 +9,6 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from cv_bridge import CvBridge
 
-
 max_exposure = 1000000
 min_exposure = 16
 exposure_val = 8000
@@ -48,7 +47,7 @@ def find_num_cameras():
 
 
 # main capture loop
-def start_camera():
+def start_camera(data):
     global exposure_val
     pub = rospy.Publisher('frames2', Image, queue_size=10)
 
@@ -94,8 +93,6 @@ def start_camera():
     camera.Close()
 
 
-
-
 def shut_down(data):
     if not data.data:
         rospy.signal_shutdown("shutdown called ")
@@ -105,12 +102,12 @@ def main():
     rospy.init_node('camera_node', anonymous=True)
     rospy.loginfo("Camera node 2 started")
     rospy.Subscriber('shutdown', Bool, shut_down)
-    start_camera()
+    rospy.Subscriber('start', Bool, start_camera)
 
 
 if __name__ == '__main__':
     try:
-        time.sleep(2)
+        time.sleep(1)
         main()
         rospy.spin()
     except rospy.ROSException:

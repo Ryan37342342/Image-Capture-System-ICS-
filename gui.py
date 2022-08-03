@@ -1,4 +1,8 @@
+import os
+import signal
+
 import rospy
+import subprocess
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from std_msgs.msg import String, Bool
@@ -17,13 +21,14 @@ class IcsGuiApp(MDApp):
     def start_capture(self, *args):
         value = True
         pub.publish(value)
+
     def stop_capture(self, *args):
         value = False
         pub3.publish(value)
 
     # function to send filepaths to gui
     def set_filepaths(self, *args):
-        print("filepaths foe savefolders")
+        print("filepaths for savefolders")
         filepaths = self.screen.ids.path1.text + "#" + self.screen.ids.path2.text
         pub2.publish(filepaths)
 
@@ -34,4 +39,3 @@ if __name__ == '__main__':
     pub2 = rospy.Publisher("filepaths", String, queue_size=10)
     pub3 = rospy.Publisher("shutdown", Bool, queue_size=10)
     IcsGuiApp().run()
-
