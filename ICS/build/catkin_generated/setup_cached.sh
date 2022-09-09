@@ -8,6 +8,7 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel/lib:$LD_LIBRARY_PATH"
 export PWD='/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build'
 export ROSLISP_PACKAGE_DIRECTORIES='/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel/share/common-lisp'
 export ROS_PACKAGE_PATH="/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/src:$ROS_PACKAGE_PATH"

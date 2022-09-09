@@ -35,3 +35,11 @@
 /home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/gtest/googletest/CMakeFiles/test.dir
 /home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/gtest/googletest/CMakeFiles/gtest_main.dir
 /home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/gtest/googletest/CMakeFiles/gtest.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/install/strip.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/install/local.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/install.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/list_install_components.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/rebuild_cache.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/edit_cache.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/test.dir
+/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS/CMakeFiles/_catkin_empty_exported_target.dir

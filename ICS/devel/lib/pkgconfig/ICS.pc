@@ -1,0 +1,8 @@
+prefix=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel
+
+Name: ICS
+Description: Description of ICS
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

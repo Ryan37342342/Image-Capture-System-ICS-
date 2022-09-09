@@ -324,6 +324,12 @@ GTEST_MAIN_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libgtest_main.a
 //Path to a library.
 GTEST_MAIN_LIBRARY_DEBUG:FILEPATH=GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
 
+//Value Computed by CMake
+ICS_BINARY_DIR:STATIC=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build/ICS
+
+//Value Computed by CMake
+ICS_SOURCE_DIR:STATIC=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/src/ICS
+
 //Enable installation of googletest. (Projects embedding googletest
 // may want to turn this OFF.)
 INSTALL_GTEST:BOOL=OFF
@@ -427,6 +433,9 @@ gtest_hide_internal_symbols:BOOL=OFF
 
 //Dependencies for the target
 gtest_main_LIB_DEPENDS:STATIC=general;gtest;
+
+//The directory containing a CMake configuration file for rospy.
+rospy_DIR:PATH=/opt/ros/noetic/share/rospy/cmake
 
 
 ########################
@@ -576,7 +585,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
