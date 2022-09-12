@@ -3,7 +3,7 @@ This is the Image Capture Sub System of my honors project designed to run on ubu
 
 # Installation 
 Install ros noetic and then clone project, run catkin_make from top ICS folder, change the value in gui.py line 15 to 
-self.screen = Builder.load(<location of gui.kv on your machine>), Also make sure to run the setup.bash file in scripts folder to install extra packages
+self.screen = Builder.load("location of gui.kv on your machine"), Also make sure to run the setup.bash file in scripts folder to install extra packages
 
 # Launch application 
 To run the ICS use the command roslaunch ros_start.launch from top ICS folder to launch the gui, to exit use ctrl-c in console to fully close everything as shutdown button
