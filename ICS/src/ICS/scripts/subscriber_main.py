@@ -2,16 +2,14 @@
 import csv
 import os
 import re
-import pyrealsense2 as rs
-import numpy as np
 import rospy
 import cv2 as cv
 from std_msgs.msg import String, Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-filepath1 = "/home/aaeon/PycharmProjects/Control-Program-/test"
-filepath2 = "/home/aaeon/PycharmProjects/Control-Program-/test2"
+filepath1 = "/home/aaeon/test"
+filepath2 = "/home/aaeon/test2"
 latest_gps_data = ''
 old_gps = ""
 cap_id = 0

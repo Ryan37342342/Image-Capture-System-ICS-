@@ -1,7 +1,5 @@
 #!/usr/bin/env
 import time
-
-import numpy as np
 import rospy
 import cv2 as cv
 from pypylon import pylon

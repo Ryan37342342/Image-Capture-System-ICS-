@@ -2,8 +2,6 @@
 import csv
 import os
 import re
-import pyrealsense2 as rs
-import numpy as np
 import rospy
 import cv2 as cv
 from std_msgs.msg import String, Bool

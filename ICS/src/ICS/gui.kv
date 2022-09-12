@@ -1,0 +1,35 @@
+FloatLayout:
+ MDRaisedButton:
+  text:"Start Capture"
+  size_hint: 0.20,0.10
+  pos_hint:{"center_x": .15, "center_y": .50}
+  on_press: app.start_capture(*args)
+
+ MDRaisedButton:
+  text:"Stop Capture"
+  size_hint: 0.20,0.10
+  pos_hint:{"center_x": .15, "center_y": .30}
+  on_press: app.stop_capture(*args)
+
+ MDRaisedButton:
+  id:filepath_button
+  text:"Set file paths"
+  size_hint: 0.20,0.10
+  pos_hint:{"center_x": .15, "center_y": .75}
+  on_press: app.set_filepaths(*args)
+
+ MDLabel:
+  text:"Set Filepaths for Captured Images"
+  pos_hint:{"center_x": .55, "center_y": .85}
+
+ MDTextField:
+  id:path1
+  pos_hint:{"center_x": .45, "center_y": .80}
+  size_hint: 0.24,0.10
+  hint_text: "set filepath like /home/user/data"
+
+ MDTextField:
+  id:path2
+  pos_hint:{"center_x": .45, "center_y": .72}
+  size_hint: 0.24,0.10
+  hint_text: "set filepath like /home/user/data2"
