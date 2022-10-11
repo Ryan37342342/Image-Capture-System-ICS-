@@ -15,7 +15,7 @@ latest_gps_data = ''
 old_gps = ""
 cap_id = 0
 data_csv = []
-headings = ["capture id", "lat", "lon", "filepath"]
+headings = ["capture id", "lat", "lon", "filepath","capture_date","capture_time"]
 
 
 # process the gps data
