@@ -8,14 +8,15 @@ import cv2 as cv
 from std_msgs.msg import String, Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+import time
 
-filepath1 = "/home/aaeon/test"
-filepath2 = "/home/aaeon/test2"
+filepath1 = "/home/aaeon/Desktop/test1"
+filepath2 = "/home/aaeon/Desktop/test2"
 latest_gps_data = ''
 old_gps = ""
 cap_id = 0
 data_csv = []
-headings = ["capture id", "lat", "lon", "filepath","capture_date","capture_time"]
+headings = ["capture id", "lat", "lon", "filepath", "capture_date", "capture_time"]
 
 
 # process the gps data
@@ -37,15 +38,15 @@ def process_gps_data(data):
 
 # save a frame from a camera
 def save_frame1(data):
-
     br = CvBridge()
     frame = br.imgmsg_to_cv2(data)
     # testing
     # cv.imshow("image", frame)
     # cv.waitKey(1)
     # get data and time
-    current_date = datetime.date
-    time = datetime.time
+    current_date = datetime.date.today()
+    t = datetime.datetime.now()
+    time_current = str(t.hour) + ':' + str(t.minute) + ':' + str(t.second)
     global latest_gps_data
     global cap_id
     global data_csv
@@ -57,7 +58,7 @@ def save_frame1(data):
     cv.imwrite(save_location, frame)
     print(os.path.join(filepath1, name))
     # print("Capture " + str(cap_id) + " saved")
-    data_csv.append([cap_id, list[0], list[1], save_location, current_date, time])
+    data_csv.append([cap_id, list[0], list[1], save_location, current_date, time_current])
     cap_id += 1
 
 
@@ -65,8 +66,9 @@ def save_frame2(data):
     br = CvBridge()
     frame = br.imgmsg_to_cv2(data)
     # get data and time
-    current_date = datetime.date
-    time = datetime.time
+    current_date = datetime.date.today()
+    t = datetime.datetime.now()
+    time_current = str(t.hour) + ':' + str(t.minute) + ':' + str(t.second)
     # testing
     # cv.imshow("image", frame)
     # cv.waitKey(1)
@@ -80,7 +82,7 @@ def save_frame2(data):
     save_location = os.path.join(filepath2, name)
     cv.imwrite(save_location, frame)
     print(os.path.join(filepath2, name))
-    data_csv.append([cap_id, list_coord[0], list_coord[1], save_location, current_date, time])
+    data_csv.append([cap_id, list_coord[0], list_coord[1], save_location, current_date, time_current])
     # print("Capture " + str(cap_id) + " saved")
     cap_id += 1
 

@@ -11,3 +11,4 @@ pip3 install pypylon
 pip3 install sparkfun-ublox-gps
 pip3 install spidev
 sudo apt install python3-cv-bridge
+sudo chmod 666 /dev/ttyACM0

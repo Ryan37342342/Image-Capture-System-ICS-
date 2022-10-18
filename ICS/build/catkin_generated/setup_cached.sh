@@ -7,5 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export LD_LIBRARY_PATH="/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel/lib:/opt/ros/noetic/lib:$LD_LIBRARY_PATH"
 export PWD='/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/build'
