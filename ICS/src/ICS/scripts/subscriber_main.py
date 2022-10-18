@@ -53,7 +53,7 @@ def save_frame1(data):
     coordinates = str(latest_gps_data)
     list = coordinates.split("#")
     rospy.loginfo("coordinates: %s", coordinates)
-    name = "capture_" + str(cap_id) + "_lat:" + list[0] + "_lon: " + list[1] + ".jpeg"
+    name = "capture_" + str(cap_id) + "_lat_" + list[0] + "_lon_" + list[1] + "_date_" + str(current_date) + ".jpeg"
     save_location = os.path.join(filepath1, name)
     cv.imwrite(save_location, frame)
     print(os.path.join(filepath1, name))
@@ -78,7 +78,7 @@ def save_frame2(data):
     coordinates = str(latest_gps_data)
     list_coord = coordinates.split("#")
     rospy.loginfo("coordinates: %s", coordinates)
-    name = "capture_" + str(cap_id) + "_lat:" + list_coord[0] + "_lon:" + list_coord[1] + ".jpeg"
+    name = "capture_" + str(cap_id) + "_lat_" + list_coord[0] + "_lon_" + list_coord[1] + ".jpeg"
     save_location = os.path.join(filepath2, name)
     cv.imwrite(save_location, frame)
     print(os.path.join(filepath2, name))
