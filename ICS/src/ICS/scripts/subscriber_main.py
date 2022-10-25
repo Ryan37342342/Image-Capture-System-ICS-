@@ -55,7 +55,7 @@ def save_frame1(data):
     rospy.loginfo("coordinates: %s", coordinates)
     name = "capture_" + str(cap_id) + "_lat_" + list[0] + "_lon_" + list[1] + "_date_" + str(current_date) + ".jpeg"
     save_location = os.path.join(filepath1, name)
-    cv.imwrite(save_location, frame)
+    # cv.imwrite(save_location, frame)
     print(os.path.join(filepath1, name))
     # print("Capture " + str(cap_id) + " saved")
     data_csv.append([cap_id, list[0], list[1], save_location, current_date, time_current])
@@ -80,7 +80,7 @@ def save_frame2(data):
     rospy.loginfo("coordinates: %s", coordinates)
     name = "capture_" + str(cap_id) + "_lat_" + list_coord[0] + "_lon_" + list_coord[1] + ".jpeg"
     save_location = os.path.join(filepath2, name)
-    cv.imwrite(save_location, frame)
+    # cv.imwrite(save_location, frame)
     print(os.path.join(filepath2, name))
     data_csv.append([cap_id, list_coord[0], list_coord[1], save_location, current_date, time_current])
     # print("Capture " + str(cap_id) + " saved")

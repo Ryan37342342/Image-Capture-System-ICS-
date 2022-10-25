@@ -1,2 +1,0 @@
-ICS
--DCATKIN_DEVEL_PREFIX=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel -DCMAKE_INSTALL_PREFIX=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/install -G Unix Makefiles

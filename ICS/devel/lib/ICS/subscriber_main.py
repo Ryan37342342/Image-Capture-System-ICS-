@@ -1,9 +1,9 @@
-#!/usr/bin/python3
+#!/home/ryan/pythonProject/Image-Capture-System-ICS-/bin/python3
 # -*- coding: utf-8 -*-
 # generated from catkin/cmake/template/script.py.in
 # creates a relay to a python script source file, acting as that file.
 # The purpose is that of a symlink
-python_script = '/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/src/ICS/scripts/subscriber_main.py'
+python_script = '/home/ryan/PycharmProjects/Image-Capture-System-ICS-/ICS/src/ICS/scripts/subscriber_main.py'
 with open(python_script, 'r') as fh:
     context = {
         '__builtins__': __builtins__,

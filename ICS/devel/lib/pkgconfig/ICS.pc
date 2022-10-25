@@ -1,4 +1,4 @@
-prefix=/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/devel
+prefix=/home/ryan/PycharmProjects/Image-Capture-System-ICS-/ICS/devel
 
 Name: ICS
 Description: Description of ICS

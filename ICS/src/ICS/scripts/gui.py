@@ -12,7 +12,7 @@ class IcsGuiApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.screen = Builder.load_file('/home/aaeon/PycharmProjects/Image-Capture-System-ICS-/ICS/src/ICS/gui.kv')
+        self.screen = Builder.load_file('/home/ryan/PycharmProjects/Image-Capture-System-ICS-/ICS/src/ICS/gui.kv')
 
     def build(self):
         return self.screen
